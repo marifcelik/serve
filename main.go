@@ -38,6 +38,20 @@ func init() {
 	fs.StringVar(&path, "path", ".", "path to serve")
 	fs.StringVar(&path, "P", ".", "path to serve")
 
+	fs.Usage = func() {
+		usage := `Usage: serve [options]
+
+Options:
+  -h, --host string
+	  host to listen on (default "localhost")
+  -p, --port string
+	  port to listen on (default "8080")
+  -P, --path string
+	  path to serve (default ".")`
+
+		fmt.Println(usage)
+	}
+
 	if err := fs.Parse(os.Args[1:]); err != nil {
 		if err == flag.ErrHelp {
 			os.Exit(0)
