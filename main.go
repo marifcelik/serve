@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-var fs = flag.NewFlagSet("fs", flag.ContinueOnError)
+var fs = flag.NewFlagSet("serve", flag.ContinueOnError)
 var host, port, path string
 
 type responseWriter struct {
@@ -37,7 +37,8 @@ func init() {
 	fs.StringVar(&port, "p", "8080", "port to listen on")
 	fs.StringVar(&path, "path", ".", "path to serve")
 	fs.StringVar(&path, "P", ".", "path to serve")
-	if err := fs.Parse(os.Args[1:]); err != nil {
+
+	if err := fs.Parse(os.Args[1:]); err != nil && err != flag.ErrHelp {
 		log.Fatalf("error parsing flags: %v", err)
 	}
 }
