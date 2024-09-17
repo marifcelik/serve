@@ -38,7 +38,10 @@ func init() {
 	fs.StringVar(&path, "path", ".", "path to serve")
 	fs.StringVar(&path, "P", ".", "path to serve")
 
-	if err := fs.Parse(os.Args[1:]); err != nil && err != flag.ErrHelp {
+	if err := fs.Parse(os.Args[1:]); err != nil {
+		if err == flag.ErrHelp {
+			os.Exit(0)
+		}
 		log.Fatalf("error parsing flags: %v", err)
 	}
 }
