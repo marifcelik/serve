@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 )
 
 var host, port, path string
@@ -51,9 +52,12 @@ Arguments:
 
 	flag.Parse()
 
-	path = "."
+	var err error
+	path, err = os.Getwd()
 	if flag.NArg() > 0 {
 		path = flag.Arg(0)
+	} else if err != nil {
+		log.Fatal(err)
 	}
 }
 
