@@ -6,10 +6,8 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"os"
 )
 
-var fs = flag.NewFlagSet("serve", flag.ContinueOnError)
 var host, port, path string
 
 type responseWriter struct {
@@ -31,38 +29,37 @@ func logger(next http.Handler) http.Handler {
 }
 
 func init() {
-	fs.StringVar(&host, "host", "localhost", "host to listen on")
-	fs.StringVar(&host, "h", "localhost", "host to listen on")
-	fs.StringVar(&port, "port", "8080", "port to listen on")
-	fs.StringVar(&port, "p", "8080", "port to listen on")
-	fs.StringVar(&path, "path", ".", "path to serve")
-	fs.StringVar(&path, "P", ".", "path to serve")
+	flag.StringVar(&host, "host", "localhost", "host to listen on")
+	flag.StringVar(&host, "h", "localhost", "host to listen on")
+	flag.StringVar(&port, "port", "8080", "port to listen on")
+	flag.StringVar(&port, "p", "8080", "port to listen on")
 
-	fs.Usage = func() {
-		usage := `Usage: serve [options]
+	flag.Usage = func() {
+		usage := `Usage: serve [options] <path>
 
 Options:
   -h, --host string
-	  host to listen on (default "localhost")
+      host to listen on (default "localhost")
   -p, --port string
-	  port to listen on (default "8080")
-  -P, --path string
-	  path to serve (default ".")`
+      port to listen on (default "8080")
+
+Arguments:
+  <path>  path to serve (default ".")`
 
 		fmt.Println(usage)
 	}
 
-	if err := fs.Parse(os.Args[1:]); err != nil {
-		if err == flag.ErrHelp {
-			os.Exit(0)
-		}
-		log.Fatalf("error parsing flags: %v", err)
+	flag.Parse()
+
+	path = "."
+	if flag.NArg() > 0 {
+		path = flag.Arg(0)
 	}
 }
 
 func main() {
-	server := http.FileServer(http.Dir(path))
-	http.Handle("/", logger(server))
+	fs := http.FileServer(http.Dir(path))
+	http.Handle("/", logger(fs))
 
 	addr := net.JoinHostPort(host, port)
 	fmt.Printf("Serving %s on %s\n", path, addr)
