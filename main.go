@@ -45,7 +45,7 @@ Options:
       port to listen on (default "8080")
 
 Arguments:
-  <path>  path to serve (default ".")`
+  <path>  path to serve (default current working directory)`
 
 		fmt.Println(usage)
 	}
