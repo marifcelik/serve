@@ -1,12 +1,15 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"log"
 	"net"
 	"net/http"
 	"os"
+	"strconv"
+	"syscall"
 )
 
 var host, port, path string
@@ -65,7 +68,27 @@ func main() {
 	fs := http.FileServer(http.Dir(path))
 	http.Handle("/", logger(fs))
 
+Serve:
 	addr := net.JoinHostPort(host, port)
+
+	l, err := net.Listen("tcp", addr)
+	if err != nil {
+		if operr, ok := err.(*net.OpError); ok && errors.Is(operr.Err, syscall.EADDRINUSE) {
+			goto ChangePort
+		}
+		log.Fatal(err)
+	}
+	defer l.Close()
+
 	fmt.Printf("Serving %s on %s\n", path, addr)
-	log.Fatal(http.ListenAndServe(addr, nil))
+	log.Fatal(http.Serve(l, nil))
+
+ChangePort:
+	newPort, err := strconv.Atoi(port)
+	if err != nil {
+		log.Fatal(err)
+	}
+	port = strconv.Itoa(newPort + 1)
+	log.Printf("WARN Address already in use, changing port to %s\n", port)
+	goto Serve
 }
