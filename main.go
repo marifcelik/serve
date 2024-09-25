@@ -12,6 +12,8 @@ import (
 	"syscall"
 )
 
+const version = "0.1"
+
 var host, port, path string
 
 type responseWriter struct {
@@ -33,10 +35,14 @@ func logger(next http.Handler) http.Handler {
 }
 
 func init() {
+	var showVersion bool
+
 	flag.StringVar(&host, "host", "localhost", "host to listen on")
 	flag.StringVar(&host, "h", "localhost", "host to listen on")
 	flag.StringVar(&port, "port", "8080", "port to listen on")
 	flag.StringVar(&port, "p", "8080", "port to listen on")
+	flag.BoolVar(&showVersion, "version", false, "show version")
+	flag.BoolVar(&showVersion, "v", false, "show version")
 
 	flag.Usage = func() {
 		usage := `Usage: serve [options] <path>
@@ -54,6 +60,11 @@ Arguments:
 	}
 
 	flag.Parse()
+
+	if showVersion {
+		fmt.Printf("v%s\n", version)
+		os.Exit(0)
+	}
 
 	var err error
 	path, err = os.Getwd()
