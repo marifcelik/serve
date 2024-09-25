@@ -52,6 +52,8 @@ Options:
       host to listen on (default "localhost")
   -p, --port string
       port to listen on (default "8080")
+  -v, --version
+	  show version
 
 Arguments:
   <path>  path to serve (default current working directory)`
