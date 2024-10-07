@@ -8,13 +8,15 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"strconv"
 	"syscall"
 )
 
 const version = "0.1"
 
-var host, port, path string
+var (
+	host, path string
+	port       int
+)
 
 type responseWriter struct {
 	http.ResponseWriter
@@ -39,8 +41,8 @@ func init() {
 
 	flag.StringVar(&host, "host", "localhost", "host to listen on")
 	flag.StringVar(&host, "h", "localhost", "host to listen on")
-	flag.StringVar(&port, "port", "8080", "port to listen on")
-	flag.StringVar(&port, "p", "8080", "port to listen on")
+	flag.IntVar(&port, "port", 8080, "port to listen on")
+	flag.IntVar(&port, "p", 8080, "port to listen on")
 	flag.BoolVar(&showVersion, "version", false, "show version")
 	flag.BoolVar(&showVersion, "v", false, "show version")
 
@@ -50,8 +52,8 @@ func init() {
 Options:
   -h, --host string
       host to listen on (default "localhost")
-  -p, --port string
-      port to listen on (default "8080")
+  -p, --port int
+      port to listen on (default 8080)
   -v, --version
 	  show version
 
@@ -82,7 +84,7 @@ func main() {
 	http.Handle("/", logger(fs))
 
 Serve:
-	addr := net.JoinHostPort(host, port)
+	addr := net.JoinHostPort(host, fmt.Sprintf("%d", port))
 
 	l, err := net.Listen("tcp", addr)
 	if err != nil {
@@ -97,11 +99,7 @@ Serve:
 	log.Fatal(http.Serve(l, nil))
 
 ChangePort:
-	newPort, err := strconv.Atoi(port)
-	if err != nil {
-		log.Fatal(err)
-	}
-	port = strconv.Itoa(newPort + 1)
-	log.Printf("WARN Address already in use, changing port to %s\n", port)
+	port++
+	fmt.Printf("WARN Address already in use, changing port to %v\n", port)
 	goto Serve
 }
