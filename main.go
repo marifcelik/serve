@@ -103,7 +103,7 @@ Serve:
 	}
 	defer l.Close()
 
-	fmt.Printf("Serving %s on %s\n", path, addr)
+	fmt.Printf("Serving %s on http://%s\n", path, addr)
 	log.Fatal(http.Serve(l, nil))
 
 ChangePort:
