@@ -16,6 +16,7 @@ const version = "0.1"
 var (
 	host, path string
 	port       int
+	public     bool
 )
 
 type responseWriter struct {
@@ -43,6 +44,8 @@ func init() {
 	flag.StringVar(&host, "h", "localhost", "host to listen on")
 	flag.IntVar(&port, "port", 8080, "port to listen on")
 	flag.IntVar(&port, "p", 8080, "port to listen on")
+	flag.BoolVar(&public, "public", false, "make the server publicly accessible")
+	flag.BoolVar(&public, "P", false, "make the server publicly accessible")
 	flag.BoolVar(&showVersion, "version", false, "show version")
 	flag.BoolVar(&showVersion, "v", false, "show version")
 
@@ -54,6 +57,8 @@ Options:
       host to listen on (default "localhost")
   -p, --port int
       port to listen on (default 8080)
+  -P, --public
+      make the server publicly accessible
   -v, --version
 	  show version
 
@@ -68,6 +73,9 @@ Arguments:
 	if showVersion {
 		fmt.Printf("v%s\n", version)
 		os.Exit(0)
+	}
+	if public {
+		host = "0.0.0.0"
 	}
 
 	var err error
